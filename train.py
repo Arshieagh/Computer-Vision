@@ -1,0 +1,81 @@
+import torch
+from tqdm import tqdm
+from data.cifar100 import load_data
+from models.baseline import BaseLineModel
+
+
+def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
+    print(f"Using device: {device}")
+    model = model.to(device)
+
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+
+    for epoch in range(num_epochs):
+        model.train()
+        print(f"Epoch {epoch+1}/{num_epochs}")
+
+        running_loss = 0.0
+        for _, (data, targets) in enumerate(tqdm(train_dataloader)):
+            data = data.to(device)
+            targets = targets.to(device)
+
+            # Forward pass
+            outputs = model(data)
+            loss = criterion(outputs, targets)
+
+            # Backward pass and optimization
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+        epoch_loss = running_loss / len(train_dataloader)
+        print(f"Epoch {epoch+1} - Loss: {epoch_loss:.4f}")
+
+
+def evaluate(model, test_dataloader, device=None):
+    model = model.to(device)
+    model.eval()
+
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for data, targets in test_dataloader:
+            data = data.to(device)
+            targets = targets.to(device)
+
+            outputs = model(data)
+            _, predicted = torch.max(outputs.data, 1)
+            total += targets.size(0)
+            correct += (predicted == targets).sum().item()
+
+    accuracy = 100 * correct / total
+    print(f"Accuracy of the model on the test images: {accuracy:.2f}%")
+
+
+def main():
+    batch_size = 128
+    num_epochs = 20
+    learning_rate = 0.001
+
+    train_dataloader, test_dataloader = load_data(batch_size=batch_size)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model = BaseLineModel()
+
+    train(
+        model,
+        train_dataloader,
+        lr=learning_rate,
+        num_epochs=num_epochs,
+        device=device,
+    )
+
+    evaluate(model, test_dataloader, device=device)
+
+
+if __name__ == "__main__":
+    main()

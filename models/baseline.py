@@ -1,6 +1,5 @@
-from torch import flatten
-import torch.nn as nn
-import torch.nn.functional as F
+import torch
+from torch import nn
 
 
 class BaseLineModel(nn.Module):
@@ -31,6 +30,6 @@ class BaseLineModel(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        x = flatten(x, start_dim=1)
+        x = torch.flatten(x, start_dim=1)
         x = self.classifier(x)
         return x
