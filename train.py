@@ -9,7 +9,7 @@ def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    scheduler = torch.optim.CosineAnnealingLR(optimizer, T_max=num_epochs)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs)
 
     for epoch in range(num_epochs):
         model.train()
