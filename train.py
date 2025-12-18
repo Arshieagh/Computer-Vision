@@ -6,7 +6,6 @@ from models.baseline import BaseLineModel
 
 def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
     print(f"Using device: {device}")
-    model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -35,7 +34,6 @@ def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
 
 
 def evaluate(model, test_dataloader, device=None):
-    model = model.to(device)
     model.eval()
 
     correct = 0
@@ -65,6 +63,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = BaseLineModel()
+    model = model.to(device)
 
     train(
         model,
