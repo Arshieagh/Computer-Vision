@@ -3,6 +3,8 @@ from tqdm import tqdm
 from data.cifar100 import load_data
 from models.baseline import BaseLineModel
 
+lambda_p = 0.5
+
 
 def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
     print(f"Using device: {device}")
@@ -26,7 +28,7 @@ def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
             logits_fine, logits_coarse = model(data)
             loss_fine = criterion(logits_fine, fine_targets)
             loss_coarse = criterion(logits_coarse, coarse_targets)
-            loss = loss_fine + 0.3 * loss_coarse
+            loss = loss_fine + lambda_p * loss_coarse
 
             # Backward pass and optimization
             optimizer.zero_grad()
