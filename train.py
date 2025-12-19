@@ -18,11 +18,15 @@ def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
         running_loss = 0.0
         for _, (data, targets) in enumerate(tqdm(train_dataloader)):
             data = data.to(device)
-            targets = targets.to(device)
+            fine_targets, coarse_targets = targets
+            fine_targets = fine_targets.to(device)
+            coarse_targets = coarse_targets.to(device)
 
             # Forward pass
-            outputs = model(data)
-            loss = criterion(outputs, targets)
+            logits_fine, logits_coarse = model(data)
+            loss_fine = criterion(logits_fine, fine_targets)
+            loss_coarse = criterion(logits_coarse, coarse_targets)
+            loss = loss_fine + 0.3 * loss_coarse
 
             # Backward pass and optimization
             optimizer.zero_grad()
@@ -44,12 +48,13 @@ def evaluate(model, test_dataloader, device=None):
     with torch.no_grad():
         for data, targets in test_dataloader:
             data = data.to(device)
-            targets = targets.to(device)
+            fine_targets, coarse_targets = targets
+            fine_targets = fine_targets.to(device)
 
-            outputs = model(data)
-            _, predicted = torch.max(outputs.data, 1)
-            total += targets.size(0)
-            correct += (predicted == targets).sum().item()
+            logits_fine, _ = model(data)
+            _, predicted = torch.max(logits_fine.data, 1)
+            total += fine_targets.size(0)
+            correct += (predicted == fine_targets).sum().item()
 
     accuracy = 100 * correct / total
     print(f"Accuracy of the model on the test images: {accuracy:.2f}%")
