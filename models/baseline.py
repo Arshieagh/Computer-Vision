@@ -61,14 +61,17 @@ class BaseLineModel(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
-        # Classifier
-        self.classifier = nn.Sequential(
+        # Shared fully connected block
+        self.fc_shared = nn.Sequential(
             nn.Linear(256 * 4 * 4, 512),
             nn.BatchNorm1d(512),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.Linear(512, self.num_classes),
         )
+        # Fine-class head
+        self.fc_fine = nn.Linear(512, 100)
+        # Coarse-class head
+        self.fc_coarse = nn.Linear(512, 20)
 
     def forward(self, x):
         x = self.stem(x)
@@ -76,5 +79,7 @@ class BaseLineModel(nn.Module):
         x = self.block2(x)
         x = self.block3(x)
         x = torch.flatten(x, start_dim=1)
-        x = self.classifier(x)
-        return x
+        features = self.fc_shared(x)
+        logits_fine = self.fc_fine(features)
+        logits_coarse = self.fc_coarse(features)
+        return logits_fine, logits_coarse
