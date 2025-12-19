@@ -7,7 +7,7 @@ from models.baseline import BaseLineModel
 def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
     print(f"Using device: {device}")
 
-    criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs)
 
@@ -57,7 +57,7 @@ def evaluate(model, test_dataloader, device=None):
 
 def main():
     batch_size = 128
-    num_epochs = 20
+    num_epochs = 20  # 50
     learning_rate = 0.001
 
     train_dataloader, test_dataloader = load_data(batch_size=batch_size)
