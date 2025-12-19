@@ -3,7 +3,7 @@ from tqdm import tqdm
 from data.cifar100 import load_data
 from models.baseline import BaseLineModel
 
-lambda_p = 0.2
+lambda_p = 0.3
 
 
 def train(model, train_dataloader, lr=0.001, num_epochs=20, device=None):
