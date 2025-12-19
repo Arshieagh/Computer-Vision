@@ -144,7 +144,6 @@ def load_data(batch_size=64):
             train=True,
             transform=train_transform,
             download=True,
-            target_type=["fine", "coarse"],
         )
     )
     train_dataloader = DataLoader(
@@ -157,7 +156,6 @@ def load_data(batch_size=64):
             train=False,
             transform=test_transform,
             download=True,
-            target_type=["fine", "coarse"],
         )
     )
     test_dataloader = DataLoader(
