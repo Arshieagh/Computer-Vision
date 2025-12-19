@@ -81,7 +81,7 @@ def main():
         num_epochs=num_epochs,
         device=device,
     )
-
+    torch.save(model.state_dict(), "model_final.pth")
     evaluate(model, test_dataloader, device=device)
 
 
